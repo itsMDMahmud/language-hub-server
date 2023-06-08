@@ -2,7 +2,7 @@ const express = require("express");
 const cors = require("cors");
 require("dotenv").config();
 ("mongodb");
-const { MongoClient, ServerApiVersion } = require("mongodb");
+const { MongoClient, ServerApiVersion, ObjectId } = require("mongodb");
 const app = express();
 const port = process.env.PORT || 5000;
 
@@ -29,29 +29,67 @@ async function run() {
     await client.connect();
 
     const usersCollection = client.db("languageDb").collection("users");
+    const classCollection = client.db("languageDb").collection("classes");
 
     app.get("/users", async (req, res) => {
       // const user = req.body;
       const result = await usersCollection.find().toArray();
       res.send(result);
     });
-    // app.get("/allusers", async (req, res) => {
-    //   // const user = req.body;
-    //   const result = await usersCollection.find().toArray();
-    //   res.send(result);
-    // });
 
+    app.get("/allusers", async (req, res) => {
+      // const user = req.body;
+      const result = await usersCollection.find().toArray();
+      res.send(result);
+    });
+
+    //users APIs (data update)
     app.post("/users", async (req, res) => {
-  const user = req.body;
-  const query = { email: user.email };
-  const existingUser = await usersCollection.findOne(query);
-  console.log("existingUser", existingUser);
-  if (existingUser) {
-    return res.send({ message: "user already exist" });
-  }
-  const result = await usersCollection.insertOne(user);
-  res.send(result);
-});
+      const user = req.body;
+      const query = { email: user.email };
+      const existingUser = await usersCollection.findOne(query);
+      console.log("existingUser", existingUser);
+      if (existingUser) {
+        return res.send({ message: "user already exist" });
+      }
+      const result = await usersCollection.insertOne(user);
+      res.send(result);
+    });
+
+    //update role
+    app.get('/users/admin/:email', async (req, res) => {
+      const email = req.params.email;
+
+      // if (req.decoded.email !== email) {
+      //   res.send({admin: false})
+      // }
+
+      const query = {email: email}
+      const user = await usersCollection.findOne(query);
+      const result = { admin: user?.role === 'admin'}
+      res.send(result);
+
+    })
+
+    app.post('/service', async(req, res) => {
+        const newService = req.body;
+        console.log(newService);
+        const result = await serviceCollection.insertOne(newService);
+        res.send(result);
+    })
+
+    app.patch("/users/admin/:id", async (req, res) => {
+      const id = req.params.id;
+      // console.log(id);
+      const filter = { _id: new ObjectId(id) };
+      const updateDoc = {
+        $set: {
+          role: "instructor",
+        },
+      };
+      const result = await usersCollection.updateOne(filter, updateDoc);
+      res.send(result);
+    });
 
     // Send a ping to confirm a successful connection
     await client.db("admin").command({ ping: 1 });
@@ -64,10 +102,6 @@ async function run() {
   }
 }
 run().catch(console.dir);
-
-
-
-
 
 app.get("/", (req, res) => {
   res.send("Language hub server is running");
