@@ -48,7 +48,7 @@ async function run() {
       const user = req.body;
       const query = { email: user.email };
       const existingUser = await usersCollection.findOne(query);
-      console.log("existingUser", existingUser);
+      // console.log("existingUser", existingUser);
       if (existingUser) {
         return res.send({ message: "user already exist" });
       }
@@ -71,10 +71,17 @@ async function run() {
 
     })
 
-    app.post('/service', async(req, res) => {
-        const newService = req.body;
-        console.log(newService);
-        const result = await serviceCollection.insertOne(newService);
+    //add class / my class
+     app.get('/classes', async(req, res) => {
+        const cursor = classCollection.find();
+        const result = await cursor.toArray();
+        res.send(result);
+      })
+
+    app.post('/classes', async(req, res) => {
+        const addClass = req.body;
+        // console.log(addClass);
+        const result = await classCollection.insertOne(addClass);
         res.send(result);
     })
 
