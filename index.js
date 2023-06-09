@@ -30,6 +30,7 @@ async function run() {
 
     const usersCollection = client.db("languageDb").collection("users");
     const classCollection = client.db("languageDb").collection("classes");
+    const cartCollection = client.db("languageDb").collection("carts");
 
     app.get("/users", async (req, res) => {
       // const user = req.body;
@@ -56,6 +57,16 @@ async function run() {
       res.send(result);
     });
     
+
+    //cart collection
+    app.post('/carts', async(req, res) => {
+      const item = req.body;
+      // console.log(item);
+      const result = await cartCollection.insertOne(item);
+      // console.log(result);
+      res.send(result);
+    } )
+
 
     //add class / my class
     //  app.get('/classes', async(req, res) => {
