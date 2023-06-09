@@ -55,6 +55,33 @@ async function run() {
       const result = await usersCollection.insertOne(user);
       res.send(result);
     });
+    
+
+    //add class / my class
+    //  app.get('/classes', async(req, res) => {
+    //     const result = await classCollection.find().toArray();
+    //     res.send(result);
+    //   })
+
+     
+
+    app.post('/classes', async(req, res) => {
+        const addClass = req.body;
+        // console.log(addClass);
+        const result = await classCollection.insertOne(addClass);
+        res.send(result);
+    })
+
+    //only my classes with email
+    app.get('/classes', async(req, res) => {
+      // console.log(req.query);
+      let query = {};
+      if (req.query?.email) {
+          query = {email: req.query.email}
+      } 
+      const result = await classCollection.find(query).toArray();
+      res.send(result)
+    })
 
     //update role
     app.get('/users/admin/:email', async (req, res) => {
@@ -71,21 +98,38 @@ async function run() {
 
     })
 
-    //add class / my class
-     app.get('/classes', async(req, res) => {
-        const cursor = classCollection.find();
-        const result = await cursor.toArray();
-        res.send(result);
-      })
+    app.patch("/users/admin/:id", async (req, res) => {
+      const id = req.params.id;
+      // console.log(id);
+      const filter = { _id: new ObjectId(id) };
+      const updateDoc = {
+        $set: {
+          role: "admin",
+        },
+      };
+      const result = await usersCollection.updateOne(filter, updateDoc);
+      res.send(result);
+    });
 
-    app.post('/classes', async(req, res) => {
-        const addClass = req.body;
-        // console.log(addClass);
-        const result = await classCollection.insertOne(addClass);
-        res.send(result);
+
+    //-----------------------------------------------------------------------------------------
+
+    //update role instructors
+    app.get('/users/instructor/:email', async (req, res) => {
+      const email = req.params.email;
+
+      // if (req.decoded.email !== email) {
+      //   res.send({admin: false})
+      // }
+
+      const query = {email: email}
+      const user = await usersCollection.findOne(query);
+      const result = { instructor: user?.role === 'instructor'}
+      res.send(result);
+
     })
 
-    app.patch("/users/admin/:id", async (req, res) => {
+    app.patch("/users/instructor/:id", async (req, res) => {
       const id = req.params.id;
       // console.log(id);
       const filter = { _id: new ObjectId(id) };
@@ -97,6 +141,7 @@ async function run() {
       const result = await usersCollection.updateOne(filter, updateDoc);
       res.send(result);
     });
+
 
     // Send a ping to confirm a successful connection
     await client.db("admin").command({ ping: 1 });
