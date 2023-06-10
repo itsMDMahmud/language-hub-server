@@ -68,6 +68,23 @@ async function run() {
     } )
 
     //student dashboard enrolled classes
+    // app.get('/carts',  async(req, res) => {
+    //   const email = req.query.email;
+    //   console.log(email);
+    //   if (!email) {
+    //     res.send([]);
+    //   }
+
+    //   // const decodedEmail = req.decoded.email;
+    //   // if (email !== decodedEmail) {
+    //   //   return res.status(403).send({error: true, message: 'forbidden access'})
+    //   // }
+
+    //   const query = {email: email};
+    //   // console.log(query);
+    //   const result = await cartCollection.find(query).toArray();
+    //   res.send(result);
+    // })
     
 
 
@@ -76,6 +93,8 @@ async function run() {
         const result = await cartCollection.find().toArray();
         res.send(result);
       })
+
+
 
     //delete enrolled course
     app.delete('/carts/:id', async(req, res) => {
