@@ -225,9 +225,44 @@ async function run() {
       if (req.query?.email) {
           query = {email: req.query.email}
       } 
+      // let sortOrder = 1; // 1 for ascending, -1 for descending
+      // if (req.query?.sort === 'desc') {
+      //   sortOrder = -1;
+      // }
       const result = await paymentCollection.find(query).toArray();
       res.send(result);
   })
+
+  //approve post by admin ----------------------------------------------------
+  // app.get('/users/instructor/:email', async (req, res) => {
+  //   const email = req.params.email;
+
+  //   // if (req.decoded.email !== email) {
+  //   //   res.send({admin: false})
+  //   // }
+
+  //   const query = {email: email}
+  //   const user = await usersCollection.findOne(query);
+  //   const result = { instructor: user?.role === 'instructor'}
+  //   res.send(result);
+
+  // })
+
+
+  app.patch("/classes/:_id", async (req, res) => {
+    const _id = req.params._id;
+    // console.log(id);
+    const updateStatus = req.body;
+    const filter = { _id: new ObjectId(_id) }
+    const updateDoc = {
+      $set: {
+          status: updateStatus.status
+      }
+  }
+    const result = await classCollection.updateOne(filter, updateDoc);
+    res.send(result);
+  });
+
 
 
     // Send a ping to confirm a successful connection
