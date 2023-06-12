@@ -232,23 +232,9 @@ async function run() {
       const result = await paymentCollection.find(query).toArray();
       res.send(result);
   })
-
-  //approve post by admin ----------------------------------------------------
-  // app.get('/users/instructor/:email', async (req, res) => {
-  //   const email = req.params.email;
-
-  //   // if (req.decoded.email !== email) {
-  //   //   res.send({admin: false})
-  //   // }
-
-  //   const query = {email: email}
-  //   const user = await usersCollection.findOne(query);
-  //   const result = { instructor: user?.role === 'instructor'}
-  //   res.send(result);
-
-  // })
-
-
+  
+  
+  //approved and declined post by admin----------------------
   app.patch("/classes/:_id", async (req, res) => {
     const _id = req.params._id;
     // console.log(id);
