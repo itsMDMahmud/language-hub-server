@@ -99,10 +99,20 @@ async function run() {
 
 
     //add class / my class
-     app.get('/carts', async(req, res) => {
-        const result = await cartCollection.find().toArray();
-        res.send(result);
-      })
+    //  app.get('/carts', async(req, res) => {
+    //     const result = await cartCollection.find().toArray();
+    //     res.send(result);
+    //   })
+
+    app.get('/carts', async(req, res) => {
+      // console.log(req.query);
+      let query = {};
+      if (req.query?.email) {
+          query = {email: req.query.email}
+      } 
+      const result = await cartCollection.find(query).toArray();
+      res.send(result)
+    })
 
 
 
@@ -137,11 +147,6 @@ async function run() {
     //update role
     app.get('/users/admin/:email', async (req, res) => {
       const email = req.params.email;
-
-      // if (req.decoded.email !== email) {
-      //   res.send({admin: false})
-      // }
-
       const query = {email: email}
       const user = await usersCollection.findOne(query);
       const result = { admin: user?.role === 'admin'}
@@ -213,10 +218,7 @@ async function run() {
     app.post('/payments', async(req, res) => {
       const payment = req.body;
       const result = await paymentCollection.insertOne(payment);
-      res.send(result);
-      // const query = {_id: {$in: payment.cartItems.map(id => new ObjectId(id))}}
-      // const deleteResult = await cartCollection.deleteMany(query);
-      // res.send({insertResult, deleteResult});
+      res.send(result);      
     } )
 
     //payment history with my email
@@ -225,10 +227,7 @@ async function run() {
       if (req.query?.email) {
           query = {email: req.query.email}
       } 
-      // let sortOrder = 1; // 1 for ascending, -1 for descending
-      // if (req.query?.sort === 'desc') {
-      //   sortOrder = -1;
-      // }
+     
       const result = await paymentCollection.find(query).toArray();
       res.send(result);
   })
