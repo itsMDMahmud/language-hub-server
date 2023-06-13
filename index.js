@@ -27,7 +27,7 @@ const client = new MongoClient(uri, {
 async function run() {
   try {
     // Connect the client to the server	(optional starting in v4.7)
-    await client.connect();
+    // await client.connect();
 
     const usersCollection = client.db("languageDb").collection("users");
     const classCollection = client.db("languageDb").collection("classes");
@@ -39,6 +39,7 @@ async function run() {
       const result = await usersCollection.find().toArray();
       res.send(result);
     });
+    
 
 
     //paymentsCollection
@@ -51,6 +52,11 @@ async function run() {
     app.get("/allusers", async (req, res) => {
       // const user = req.body;
       const result = await usersCollection.find().toArray();
+      res.send(result);
+    });
+    app.get("/classes", async (req, res) => {
+      // const user = req.body;
+      const result = await classCollection.find().toArray();
       res.send(result);
     });
 
@@ -77,35 +83,10 @@ async function run() {
       res.send(result);
     } )
 
-    //student dashboard enrolled classes
-    // app.get('/carts',  async(req, res) => {
-    //   const email = req.query.email;
-    //   console.log(email);
-    //   if (!email) {
-    //     res.send([]);
-    //   }
-
-    //   // const decodedEmail = req.decoded.email;
-    //   // if (email !== decodedEmail) {
-    //   //   return res.status(403).send({error: true, message: 'forbidden access'})
-    //   // }
-
-    //   const query = {email: email};
-    //   // console.log(query);
-    //   const result = await cartCollection.find(query).toArray();
-    //   res.send(result);
-    // })
     
 
-
-    //add class / my class
-    //  app.get('/carts', async(req, res) => {
-    //     const result = await cartCollection.find().toArray();
-    //     res.send(result);
-    //   })
-
     app.get('/carts/:email', async(req, res) => {
-      // console.log(req.query);
+     
       const email = req.params.email;
       const query = {UserEmail: email};
       
@@ -133,12 +114,10 @@ async function run() {
     })
 
     //only my classes with email
-    app.get('/classes', async(req, res) => {
-      // console.log(req.query);
-      let query = {};
-      if (req.query?.email) {
-          query = {email: req.query.email}
-      } 
+    app.get('/classes/:email', async(req, res) => {
+      
+      const email = req.params.email;
+      const query = {email: email};
       const result = await classCollection.find(query).toArray();
       res.send(result)
     })
@@ -221,15 +200,15 @@ async function run() {
     } )
 
     //payment history with my email
-    app.get('/payments', async(req, res) => {
-      let query = {};
-      if (req.query?.email) {
-          query = {email: req.query.email}
-      } 
-     
+    app.get('/payments/:email', async(req, res) => {
+      // console.log(req.query);
+      const email = req.params.email;
+      const query = {email: email};
+      
       const result = await paymentCollection.find(query).toArray();
-      res.send(result);
-  })
+      res.send(result)
+    })
+
   
   
   //approved and declined post by admin----------------------
