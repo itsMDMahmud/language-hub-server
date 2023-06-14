@@ -39,6 +39,11 @@ async function run() {
       const result = await usersCollection.find().toArray();
       res.send(result);
     });
+    app.get("/payments", async (req, res) => {
+      // const user = req.body;
+      const result = await paymentCollection.find().toArray();
+      res.send(result);
+    });
     
 
 
